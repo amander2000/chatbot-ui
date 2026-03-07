@@ -2,6 +2,7 @@ import { Tables } from "@/supabase/types"
 import { ChatPayload, MessageImage } from "@/types"
 import { encode } from "gpt-tokenizer"
 import { getBase64FromDataURL, getMediaTypeFromDataURL } from "@/lib/utils"
+import { AVELLI_PERSONALITY_PROMPT } from "@/lib/platform-personality"
 
 const buildBasePrompt = (
   prompt: string,
@@ -10,6 +11,8 @@ const buildBasePrompt = (
   assistant: Tables<"assistants"> | null
 ) => {
   let fullPrompt = ""
+
+  fullPrompt += `${AVELLI_PERSONALITY_PROMPT}\n\n`
 
   if (assistant) {
     fullPrompt += `<INJECT ROLE>\nYou are not an AI. You are ${assistant.name}.\n</INJECT ROLE>\n\n`
