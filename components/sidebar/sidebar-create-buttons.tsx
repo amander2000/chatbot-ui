@@ -51,30 +51,30 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     setFolders([...folders, createdFolder])
   }
 
-  // For chats view: render the unified "+New Chat / Files / > New Folder" stack
+  // For chats view: render the unified "+ New Session / Add Folder / Files" stack
   if (contentType === "chats") {
     return (
       <div className="flex w-full flex-col">
-        {/* + New Chat */}
+        {/* + New Session */}
         <button className={ACTION_TEXT_CLASS} onClick={handleNewChat}>
           <IconPlus className="mr-1" size={14} />
-          New Chat
+          New Session
         </button>
 
-        {/* Files — opens file upload dialog */}
+        {/* Add Folder */}
+        <button
+          className={ACTION_TEXT_CLASS}
+          onClick={() => handleCreateFolder()}
+        >
+          Add Folder
+        </button>
+
+        {/* Files — opens file upload dialog, listed last */}
         <button
           className={ACTION_TEXT_CLASS}
           onClick={() => setIsCreatingFile(true)}
         >
           Files
-        </button>
-
-        {/* > New Folder */}
-        <button
-          className={ACTION_TEXT_CLASS}
-          onClick={() => handleCreateFolder()}
-        >
-          &gt; New Folder
         </button>
 
         {isCreatingFile && (
@@ -122,7 +122,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
           className={ACTION_TEXT_CLASS}
           onClick={() => handleCreateFolder()}
         >
-          &gt; New Folder
+          Add Folder
         </button>
       )}
 

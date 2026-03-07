@@ -84,7 +84,46 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
       </PopoverTrigger>
 
       <PopoverContent className="p-2">
-        <div className="space-y-2">
+        <div className="flex flex-col space-y-1">
+          {/* Home workspace(s) */}
+          {workspaces
+            .filter(workspace => workspace.is_home)
+            .map(workspace => (
+              <button
+                key={workspace.id}
+                className="flex w-full items-center px-2 py-1.5 text-left text-sm font-semibold hover:opacity-50"
+                onClick={() => handleSelect(workspace.id)}
+              >
+                {workspace.name}
+              </button>
+            ))}
+
+          {/* "Workspace" section label + non-home workspaces */}
+          {workspaces.filter(w => !w.is_home).length > 0 && (
+            <>
+              <div className="text-muted-foreground px-2 py-1 text-xs font-semibold uppercase tracking-wider">
+                Workspace
+              </div>
+
+              {workspaces
+                .filter(
+                  workspace =>
+                    !workspace.is_home &&
+                    workspace.name.toLowerCase().includes(search.toLowerCase())
+                )
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(workspace => (
+                  <button
+                    key={workspace.id}
+                    className="flex w-full items-center px-2 py-1.5 text-left text-sm font-semibold hover:opacity-50"
+                    onClick={() => handleSelect(workspace.id)}
+                  >
+                    {workspace.name}
+                  </button>
+                ))}
+            </>
+          )}
+
           {/* + New Workspace — plain clickable text */}
           <button
             className="flex w-full cursor-pointer items-center py-1 text-sm font-medium hover:opacity-70"
@@ -93,43 +132,13 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
             + New Workspace
           </button>
 
+          {/* Search Workspaces input — always at the bottom */}
           <Input
-            placeholder="Search workspaces..."
+            placeholder="Search Workspaces"
             autoFocus
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-
-          <div className="flex flex-col space-y-1">
-            {workspaces
-              .filter(workspace => workspace.is_home)
-              .map(workspace => (
-                <button
-                  key={workspace.id}
-                  className="flex w-full items-center px-2 py-1.5 text-left text-sm font-semibold hover:opacity-50"
-                  onClick={() => handleSelect(workspace.id)}
-                >
-                  {workspace.name}
-                </button>
-              ))}
-
-            {workspaces
-              .filter(
-                workspace =>
-                  !workspace.is_home &&
-                  workspace.name.toLowerCase().includes(search.toLowerCase())
-              )
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map(workspace => (
-                <button
-                  key={workspace.id}
-                  className="flex w-full items-center px-2 py-1.5 text-left text-sm font-semibold hover:opacity-50"
-                  onClick={() => handleSelect(workspace.id)}
-                >
-                  {workspace.name}
-                </button>
-              ))}
-          </div>
         </div>
       </PopoverContent>
     </Popover>

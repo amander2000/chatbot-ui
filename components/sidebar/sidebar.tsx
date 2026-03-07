@@ -26,10 +26,16 @@ export const Sidebar: FC<SidebarProps> = ({ showSidebar }) => {
       }}
     >
       <div className="flex h-full flex-col p-3">
+        {/* Header: workspace switcher + settings gear + profile avatar */}
         <div className="flex items-center border-b-2 pb-2">
           <WorkspaceSwitcher />
 
           <WorkspaceSettings />
+
+          <WithTooltip
+            display={<div>Profile Settings</div>}
+            trigger={<ProfileSettings />}
+          />
         </div>
 
         <div className="flex min-h-0 grow flex-col">
@@ -37,13 +43,6 @@ export const Sidebar: FC<SidebarProps> = ({ showSidebar }) => {
             contentType="chats"
             data={chats}
             folders={chatFolders}
-          />
-        </div>
-
-        <div className="flex justify-center pt-4">
-          <WithTooltip
-            display={<div>Profile Settings</div>}
-            trigger={<ProfileSettings />}
           />
         </div>
       </div>
