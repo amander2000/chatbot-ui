@@ -1,27 +1,5 @@
-"use client"
-
-import Image from "next/image"
-import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default function HomePage() {
-  return (
-    <div className="flex size-full flex-col items-center justify-center">
-      <div>
-        <Image
-          src="/DARK_BRAND_LOGO.png"
-          alt="Avelli"
-          width={840}
-          height={560}
-          priority
-        />
-      </div>
-
-      <Link
-        className="mt-4 text-2xl font-semibold text-black hover:opacity-70"
-        href="/login"
-      >
-        Enter AVELLI
-      </Link>
-    </div>
-  )
+  redirect("/login")
 }
