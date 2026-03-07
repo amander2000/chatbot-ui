@@ -4,7 +4,7 @@ import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
 import {
   IconBolt,
-  IconCirclePlus,
+  IconPaperclip,
   IconPlayerStopFilled,
   IconSend
 } from "@tabler/icons-react"
@@ -23,6 +23,8 @@ import { useSelectFileHandler } from "./chat-hooks/use-select-file-handler"
 
 interface ChatInputProps {}
 
+type InputMode = "default" | "humanize" | "write" | "summarize"
+
 export const ChatInput: FC<ChatInputProps> = ({}) => {
   const { t } = useTranslation()
 
@@ -31,6 +33,33 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
   })
 
   const [isTyping, setIsTyping] = useState<boolean>(false)
+  const [inputMode, setInputMode] = useState<InputMode>("default")
+
+  const getPlaceholder = () => {
+    switch (inputMode) {
+      case "humanize":
+        return t("Paste or upload your AI generated text")
+      case "write":
+        return t("What are we creating?")
+      case "summarize":
+        return t("Upload or Paste text to be summarized.")
+      default:
+        return t("Ask anything...")
+    }
+  }
+
+  const getMessageToSend = (input: string) => {
+    switch (inputMode) {
+      case "humanize":
+        return `Please revise the following AI-generated text to sound more natural and human-like:\n\n${input}`
+      case "write":
+        return `Please write the following in a natural, human-like writing style:\n\n${input}`
+      case "summarize":
+        return `Please provide a concise summary of the following text:\n\n${input}`
+      default:
+        return input
+    }
+  }
 
   const {
     isAssistantPickerOpen,
@@ -85,7 +114,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
-      handleSendMessage(userInput, chatMessages, false)
+      handleSendMessage(getMessageToSend(userInput), chatMessages, false)
     }
 
     // Consolidate conditions to avoid TypeScript error
@@ -217,9 +246,10 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         </div>
 
         <>
-          <IconCirclePlus
-            className="absolute bottom-[12px] left-3 cursor-pointer p-1 hover:opacity-50"
-            size={32}
+          <IconPaperclip
+            className="absolute bottom-[12px] left-3 cursor-pointer hover:opacity-50"
+            size={24}
+            strokeWidth={1.5}
             onClick={() => fileInputRef.current?.click()}
           />
 
@@ -239,10 +269,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         <TextareaAutosize
           textareaRef={chatInputRef}
           className="ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder={t(
-            // `Ask anything. Type "@" for assistants, "/" for prompts, "#" for files, and "!" for tools.`
-            `Ask anything. Type @  /  #  !`
-          )}
+          placeholder={getPlaceholder()}
           onValueChange={handleInputChange}
           value={userInput}
           minRows={1}
@@ -262,19 +289,43 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             />
           ) : (
             <IconSend
-              className={cn(
-                "bg-primary text-secondary rounded p-1",
-                !userInput && "cursor-not-allowed opacity-50"
-              )}
+              className={cn(!userInput && "cursor-not-allowed opacity-50")}
               onClick={() => {
                 if (!userInput) return
 
-                handleSendMessage(userInput, chatMessages, false)
+                handleSendMessage(
+                  getMessageToSend(userInput),
+                  chatMessages,
+                  false
+                )
               }}
-              size={30}
+              size={28}
             />
           )}
         </div>
+      </div>
+
+      <div className="mt-3 flex justify-center space-x-3">
+        {(
+          [
+            { mode: "humanize", label: "Humanize Text" },
+            { mode: "write", label: "Write" },
+            { mode: "summarize", label: "Summarize" }
+          ] as { mode: InputMode; label: string }[]
+        ).map(({ mode, label }) => (
+          <button
+            key={mode}
+            type="button"
+            aria-pressed={inputMode === mode}
+            onClick={() => setInputMode(inputMode === mode ? "default" : mode)}
+            className={cn(
+              "cursor-pointer rounded-full border border-black bg-transparent px-4 py-1.5 text-sm transition-opacity hover:opacity-70 dark:border-white",
+              inputMode === mode && "font-semibold"
+            )}
+          >
+            {label}
+          </button>
+        ))}
       </div>
     </>
   )
