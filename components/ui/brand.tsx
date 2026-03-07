@@ -9,8 +9,8 @@ export const Brand: FC = () => {
       <Image
         src="/DARK_BRAND_LOGO.png"
         alt="Avelli"
-        width={420}
-        height={280}
+        width={840}
+        height={560}
         priority
       />
     </div>
