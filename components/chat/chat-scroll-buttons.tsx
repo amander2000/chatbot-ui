@@ -1,7 +1,4 @@
-import {
-  IconCircleArrowDownFilled,
-  IconCircleArrowUpFilled
-} from "@tabler/icons-react"
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react"
 import { FC } from "react"
 
 interface ChatScrollButtonsProps {
@@ -22,17 +19,17 @@ export const ChatScrollButtons: FC<ChatScrollButtonsProps> = ({
   return (
     <>
       {!isAtTop && isOverflowing && (
-        <IconCircleArrowUpFilled
-          className="cursor-pointer opacity-50 hover:opacity-100"
-          size={32}
+        <IconArrowUp
+          className="cursor-pointer opacity-40 hover:opacity-80"
+          size={22}
           onClick={scrollToTop}
         />
       )}
 
       {!isAtBottom && isOverflowing && (
-        <IconCircleArrowDownFilled
-          className="cursor-pointer opacity-50 hover:opacity-100"
-          size={32}
+        <IconArrowDown
+          className="cursor-pointer opacity-40 hover:opacity-80"
+          size={22}
           onClick={scrollToBottom}
         />
       )}

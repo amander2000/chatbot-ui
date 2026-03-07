@@ -51,7 +51,23 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
+    <div className="relative flex h-full flex-col items-center justify-center">
+      <div className="absolute right-4 top-4 flex items-center space-x-4">
+        <button
+          type="button"
+          onClick={goToLogin}
+          className="cursor-pointer text-sm hover:opacity-70"
+        >
+          Sign In
+        </button>
+        <button
+          type="button"
+          onClick={goToLogin}
+          className="cursor-pointer rounded-full bg-black px-4 py-1.5 text-sm text-white hover:opacity-70 dark:bg-white dark:text-black"
+        >
+          Sign Up
+        </button>
+      </div>
       <div className="flex w-full min-w-[300px] flex-col items-center px-2 sm:w-[600px] md:w-[700px] lg:w-[700px] xl:w-[800px]">
         <Brand width={630} height={420} />
 
