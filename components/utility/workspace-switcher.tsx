@@ -1,6 +1,5 @@
 "use client"
 
-import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import {
   Popover,
   PopoverContent,
@@ -9,10 +8,8 @@ import {
 import { ChatbotUIContext } from "@/context/context"
 import { createWorkspace } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
-import { IconPlus } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
 import { FC, useContext, useEffect, useState } from "react"
-import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 
 interface WorkspaceSwitcherProps {}
@@ -20,15 +17,8 @@ interface WorkspaceSwitcherProps {}
 export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
   useHotkey(";", () => setOpen(prevState => !prevState))
 
-  const {
-    workspaces,
-    workspaceImages,
-    selectedWorkspace,
-    setSelectedWorkspace,
-    setWorkspaces
-  } = useContext(ChatbotUIContext)
-
-  const { handleNewChat } = useChatHandler()
+  const { workspaces, selectedWorkspace, setSelectedWorkspace, setWorkspaces } =
+    useContext(ChatbotUIContext)
 
   const router = useRouter()
 
@@ -95,14 +85,13 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
 
       <PopoverContent className="p-2">
         <div className="space-y-2">
-          <Button
-            className="flex w-full items-center space-x-2"
-            size="sm"
+          {/* + New Workspace — plain clickable text */}
+          <button
+            className="flex w-full cursor-pointer items-center py-1 text-sm font-medium hover:opacity-70"
             onClick={handleCreateWorkspace}
           >
-            <IconPlus />
-            <div className="ml-2">New Workspace</div>
-          </Button>
+            + New Workspace
+          </button>
 
           <Input
             placeholder="Search workspaces..."

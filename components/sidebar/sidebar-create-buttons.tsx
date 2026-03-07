@@ -2,7 +2,7 @@ import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatbotUIContext } from "@/context/context"
 import { createFolder } from "@/db/folders"
 import { ContentType } from "@/types"
-import { IconFolderPlus, IconPlus } from "@tabler/icons-react"
+import { IconPlus } from "@tabler/icons-react"
 import { FC, useContext, useState } from "react"
 import { CreateAssistant } from "./items/assistants/create-assistant"
 import { CreateCollection } from "./items/collections/create-collection"
@@ -16,6 +16,10 @@ interface SidebarCreateButtonsProps {
   contentType: ContentType
   hasData: boolean
 }
+
+// Common style for all action text links in the sidebar
+const ACTION_TEXT_CLASS =
+  "flex w-full cursor-pointer items-center py-1 text-sm font-medium hover:opacity-70"
 
 export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
   contentType,
@@ -47,87 +51,78 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     setFolders([...folders, createdFolder])
   }
 
-  const getCreateFunction = () => {
-    switch (contentType) {
-      case "chats":
-        return async () => {
-          handleNewChat()
-        }
+  // For chats view: render the unified "+New Chat / Files / > New Folder" stack
+  if (contentType === "chats") {
+    return (
+      <div className="flex w-full flex-col">
+        {/* + New Chat */}
+        <button className={ACTION_TEXT_CLASS} onClick={handleNewChat}>
+          <IconPlus className="mr-1" size={14} />
+          New Chat
+        </button>
 
-      case "presets":
-        return async () => {
-          setIsCreatingPreset(true)
-        }
+        {/* Files — opens file upload dialog */}
+        <button
+          className={ACTION_TEXT_CLASS}
+          onClick={() => setIsCreatingFile(true)}
+        >
+          Files
+        </button>
 
-      case "prompts":
-        return async () => {
-          setIsCreatingPrompt(true)
-        }
+        {/* > New Folder */}
+        <button
+          className={ACTION_TEXT_CLASS}
+          onClick={() => handleCreateFolder()}
+        >
+          &gt; New Folder
+        </button>
 
-      case "files":
-        return async () => {
-          setIsCreatingFile(true)
-        }
-
-      case "collections":
-        return async () => {
-          setIsCreatingCollection(true)
-        }
-
-      case "assistants":
-        return async () => {
-          setIsCreatingAssistant(true)
-        }
-
-      case "tools":
-        return async () => {
-          setIsCreatingTool(true)
-        }
-
-      case "models":
-        return async () => {
-          setIsCreatingModel(true)
-        }
-
-      default:
-        break
-    }
+        {isCreatingFile && (
+          <CreateFile
+            isOpen={isCreatingFile}
+            onOpenChange={setIsCreatingFile}
+          />
+        )}
+      </div>
+    )
   }
 
-  const itemLabel =
-    contentType === "chats"
-      ? "New Chat"
-      : `New ${contentType.charAt(0).toUpperCase() + contentType.slice(1, contentType.length - 1)}`
+  // Generic create button for non-chats content types (files, presets, etc.)
+  const itemLabel = `New ${contentType.charAt(0).toUpperCase() + contentType.slice(1, contentType.length - 1)}`
 
   return (
-    <div className="flex w-full items-center space-x-2">
-      {contentType === "chats" ? (
-        /* Plain clickable text for New Chat */
-        <button
-          className="flex grow cursor-pointer items-center text-sm font-medium hover:opacity-70"
-          onClick={getCreateFunction()}
-        >
-          <IconPlus className="mr-1" size={16} />
-          {itemLabel}
-        </button>
-      ) : (
-        <button
-          className="border-input flex h-[36px] grow cursor-pointer items-center justify-center rounded-md border px-3 text-sm font-medium hover:opacity-70"
-          onClick={getCreateFunction()}
-        >
-          <IconPlus className="mr-1" size={16} />
-          {itemLabel}
-        </button>
-      )}
+    <div className="flex w-full flex-col">
+      <button
+        className={ACTION_TEXT_CLASS}
+        onClick={() => {
+          switch (contentType) {
+            case "presets":
+              return setIsCreatingPreset(true)
+            case "prompts":
+              return setIsCreatingPrompt(true)
+            case "files":
+              return setIsCreatingFile(true)
+            case "collections":
+              return setIsCreatingCollection(true)
+            case "assistants":
+              return setIsCreatingAssistant(true)
+            case "tools":
+              return setIsCreatingTool(true)
+            case "models":
+              return setIsCreatingModel(true)
+          }
+        }}
+      >
+        <IconPlus className="mr-1" size={14} />
+        {itemLabel}
+      </button>
 
-      {/* Show folder button only for non-chats contexts */}
-      {contentType !== "chats" && hasData && (
+      {hasData && (
         <button
-          className="flex size-[36px] cursor-pointer items-center justify-center hover:opacity-70"
-          onClick={handleCreateFolder}
-          aria-label="New Folder"
+          className={ACTION_TEXT_CLASS}
+          onClick={() => handleCreateFolder()}
         >
-          <IconFolderPlus size={20} />
+          &gt; New Folder
         </button>
       )}
 

@@ -1,22 +1,18 @@
 "use client"
 
 import { Sidebar } from "@/components/sidebar/sidebar"
-import { SidebarSwitcher } from "@/components/sidebar/sidebar-switcher"
-import { Tabs } from "@/components/ui/tabs"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { cn } from "@/lib/utils"
-import { ContentType } from "@/types"
 import Image from "next/image"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FC, useState } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
 
 export const SIDEBAR_WIDTH = 350
 
-// 3× the AVELLI chat-message monogram (AVELLI_HEIGHT=56, AVELLI_WIDTH=64)
-const TOGGLE_MONOGRAM_HEIGHT = 168
-const TOGGLE_MONOGRAM_WIDTH = 192
+// 50% of the previous 3× chat-monogram size (192×168 → 96×84)
+const TOGGLE_MONOGRAM_HEIGHT = 84
+const TOGGLE_MONOGRAM_WIDTH = 96
 
 interface DashboardProps {
   children: React.ReactNode
@@ -25,16 +21,8 @@ interface DashboardProps {
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
   useHotkey("s", () => setShowSidebar(prevState => !prevState))
 
-  const pathname = usePathname()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const tabValue = searchParams.get("tab") || "chats"
-
   const { handleSelectDeviceFile } = useSelectFileHandler()
 
-  const [contentType, setContentType] = useState<ContentType>(
-    tabValue as ContentType
-  )
   const [showSidebar, setShowSidebar] = useState(
     localStorage.getItem("showSidebar") === "true"
   )
@@ -85,20 +73,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           width: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px"
         }}
       >
-        {showSidebar && (
-          <Tabs
-            className="flex h-full"
-            value={contentType}
-            onValueChange={tabValue => {
-              setContentType(tabValue as ContentType)
-              router.replace(`${pathname}?tab=${tabValue}`)
-            }}
-          >
-            <SidebarSwitcher onContentTypeChange={setContentType} />
-
-            <Sidebar contentType={contentType} showSidebar={showSidebar} />
-          </Tabs>
-        )}
+        {showSidebar && <Sidebar showSidebar={showSidebar} />}
       </div>
 
       <div
@@ -116,7 +91,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           children
         )}
 
-        {/* AVELLI monogram in top-left — replaces the old ">" chevron button */}
+        {/* AVELLI monogram in top-left — toggles sidebar */}
         <button
           className="absolute left-2 top-2 z-10 cursor-pointer opacity-80 hover:opacity-60"
           onClick={handleToggleSidebar}
