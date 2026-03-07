@@ -272,7 +272,10 @@ export const useChatHandler = () => {
 
       let generatedText = ""
 
-      if (selectedTools.length > 0) {
+      if (
+        selectedTools.length > 0 ||
+        process.env.NEXT_PUBLIC_TAVILY_ENABLED === "true"
+      ) {
         setToolInUse("Tools")
 
         const formattedMessages = await buildFinalMessages(

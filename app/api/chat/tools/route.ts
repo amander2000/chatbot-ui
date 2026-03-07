@@ -1,5 +1,6 @@
 import { openapiToFunctions } from "@/lib/openapi-conversion"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
+import { tavilySearch } from "@/lib/tools/tavily"
 import { Tables } from "@/supabase/types"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
@@ -59,6 +60,34 @@ export async function POST(request: Request) {
       }
     }
 
+    // Inject built-in Tavily search tool when the API key is configured
+    if (process.env.TAVILY_API_KEY) {
+      allTools.push({
+        type: "function",
+        function: {
+          name: "tavily_search",
+          description:
+            "Search the web for current information using Tavily. Use this for questions about recent events, news, or any topic that benefits from up-to-date web results.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description: "The search query to look up"
+              },
+              search_depth: {
+                type: "string",
+                enum: ["basic", "advanced"],
+                description:
+                  "Search depth: 'basic' for fast results, 'advanced' for more comprehensive results. Defaults to 'basic'."
+              }
+            },
+            required: ["query"]
+          }
+        }
+      })
+    }
+
     const firstResponse = await openai.chat.completions.create({
       model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
       messages,
@@ -85,107 +114,115 @@ export async function POST(request: Request) {
         const parsedArgs = JSON.parse(argumentsString)
 
         // Find the schema detail that contains the function name
-        const schemaDetail = schemaDetails.find(detail =>
-          Object.values(detail.routeMap).includes(functionName)
-        )
+        // Handle built-in Tavily search tool natively (no external HTTP call needed)
+        let data: any = {}
 
-        if (!schemaDetail) {
-          throw new Error(`Function ${functionName} not found in any schema`)
-        }
-
-        const pathTemplate = Object.keys(schemaDetail.routeMap).find(
-          key => schemaDetail.routeMap[key] === functionName
-        )
-
-        if (!pathTemplate) {
-          throw new Error(`Path for function ${functionName} not found`)
-        }
-
-        const path = pathTemplate.replace(/:(\w+)/g, (_, paramName) => {
-          const value = parsedArgs.parameters[paramName]
-          if (!value) {
-            throw new Error(
-              `Parameter ${paramName} not found for function ${functionName}`
-            )
-          }
-          return encodeURIComponent(value)
-        })
-
-        if (!path) {
-          throw new Error(`Path for function ${functionName} not found`)
-        }
-
-        // Determine if the request should be in the body or as a query
-        const isRequestInBody = schemaDetail.requestInBody
-        let data = {}
-
-        if (isRequestInBody) {
-          // If the type is set to body
-          let headers = {
-            "Content-Type": "application/json"
-          }
-
-          // Check if custom headers are set
-          const customHeaders = schemaDetail.headers // Moved this line up to the loop
-          // Check if custom headers are set and are of type string
-          if (customHeaders && typeof customHeaders === "string") {
-            let parsedCustomHeaders = JSON.parse(customHeaders) as Record<
-              string,
-              string
-            >
-
-            headers = {
-              ...headers,
-              ...parsedCustomHeaders
-            }
-          }
-
-          const fullUrl = schemaDetail.url + path
-
-          const bodyContent = parsedArgs.requestBody || parsedArgs
-
-          const requestInit = {
-            method: "POST",
-            headers,
-            body: JSON.stringify(bodyContent) // Use the extracted requestBody or the entire parsedArgs
-          }
-
-          const response = await fetch(fullUrl, requestInit)
-
-          if (!response.ok) {
-            data = {
-              error: response.statusText
-            }
-          } else {
-            data = await response.json()
+        if (functionName === "tavily_search") {
+          try {
+            data = await tavilySearch(parsedArgs.query, {
+              searchDepth: parsedArgs.search_depth
+            })
+          } catch (err: any) {
+            data = { error: err.message }
           }
         } else {
-          // If the type is set to query
-          const queryParams = new URLSearchParams(
-            parsedArgs.parameters
-          ).toString()
-          const fullUrl =
-            schemaDetail.url + path + (queryParams ? "?" + queryParams : "")
+          const schemaDetail = schemaDetails.find(detail =>
+            Object.values(detail.routeMap).includes(functionName)
+          )
 
-          let headers = {}
-
-          // Check if custom headers are set
-          const customHeaders = schemaDetail.headers
-          if (customHeaders && typeof customHeaders === "string") {
-            headers = JSON.parse(customHeaders)
+          if (!schemaDetail) {
+            throw new Error(`Function ${functionName} not found in any schema`)
           }
 
-          const response = await fetch(fullUrl, {
-            method: "GET",
-            headers: headers
+          const pathTemplate = Object.keys(schemaDetail.routeMap).find(
+            key => schemaDetail.routeMap[key] === functionName
+          )
+
+          if (!pathTemplate) {
+            throw new Error(`Path for function ${functionName} not found`)
+          }
+
+          const path = pathTemplate.replace(/:(\w+)/g, (_, paramName) => {
+            const value = parsedArgs.parameters[paramName]
+            if (!value) {
+              throw new Error(
+                `Parameter ${paramName} not found for function ${functionName}`
+              )
+            }
+            return encodeURIComponent(value)
           })
 
-          if (!response.ok) {
-            data = {
-              error: response.statusText
+          // Determine if the request should be in the body or as a query
+          const isRequestInBody = schemaDetail.requestInBody
+
+          if (isRequestInBody) {
+            // If the type is set to body
+            let headers = {
+              "Content-Type": "application/json"
+            }
+
+            // Check if custom headers are set
+            const customHeaders = schemaDetail.headers // Moved this line up to the loop
+            // Check if custom headers are set and are of type string
+            if (customHeaders && typeof customHeaders === "string") {
+              let parsedCustomHeaders = JSON.parse(customHeaders) as Record<
+                string,
+                string
+              >
+
+              headers = {
+                ...headers,
+                ...parsedCustomHeaders
+              }
+            }
+
+            const fullUrl = schemaDetail.url + path
+
+            const bodyContent = parsedArgs.requestBody || parsedArgs
+
+            const requestInit = {
+              method: "POST",
+              headers,
+              body: JSON.stringify(bodyContent) // Use the extracted requestBody or the entire parsedArgs
+            }
+
+            const response = await fetch(fullUrl, requestInit)
+
+            if (!response.ok) {
+              data = {
+                error: response.statusText
+              }
+            } else {
+              data = await response.json()
             }
           } else {
-            data = await response.json()
+            // If the type is set to query
+            const queryParams = new URLSearchParams(
+              parsedArgs.parameters
+            ).toString()
+            const fullUrl =
+              schemaDetail.url + path + (queryParams ? "?" + queryParams : "")
+
+            let headers = {}
+
+            // Check if custom headers are set
+            const customHeaders = schemaDetail.headers
+            if (customHeaders && typeof customHeaders === "string") {
+              headers = JSON.parse(customHeaders)
+            }
+
+            const response = await fetch(fullUrl, {
+              method: "GET",
+              headers: headers
+            })
+
+            if (!response.ok) {
+              data = {
+                error: response.statusText
+              }
+            } else {
+              data = await response.json()
+            }
           }
         }
 
