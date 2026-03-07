@@ -19,6 +19,8 @@ import { MessageActions } from "./message-actions"
 import { MessageMarkdown } from "./message-markdown"
 
 const ICON_SIZE = 32
+const AVELLI_HEIGHT = 56 // 32 * 1.75 (+75%)
+const AVELLI_WIDTH = 64 // 32 * 2.0 (+100%)
 
 interface MessageProps {
   message: Tables<"messages">
@@ -177,12 +179,15 @@ export const Message: FC<MessageProps> = ({
           ) : message.role === "assistant" ? (
             <div className="flex items-center space-x-3">
               <Image
-                style={{ width: `${ICON_SIZE}px`, height: `${ICON_SIZE}px` }}
-                className="rounded"
+                style={{
+                  width: `${AVELLI_WIDTH}px`,
+                  height: `${AVELLI_HEIGHT}px`
+                }}
+                className="rounded object-contain"
                 src="/icon-192x192.png"
                 alt="AVELLI"
-                height={ICON_SIZE}
-                width={ICON_SIZE}
+                height={AVELLI_HEIGHT}
+                width={AVELLI_WIDTH}
               />
 
               <div className="font-semibold">AVELLI</div>

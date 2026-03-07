@@ -4,7 +4,6 @@ import { createFolder } from "@/db/folders"
 import { ContentType } from "@/types"
 import { IconFolderPlus, IconPlus } from "@tabler/icons-react"
 import { FC, useContext, useState } from "react"
-import { Button } from "../ui/button"
 import { CreateAssistant } from "./items/assistants/create-assistant"
 import { CreateCollection } from "./items/collections/create-collection"
 import { CreateFile } from "./items/files/create-file"
@@ -95,19 +94,41 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     }
   }
 
-  return (
-    <div className="flex w-full space-x-2">
-      <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
-        <IconPlus className="mr-1" size={20} />
-        New{" "}
-        {contentType.charAt(0).toUpperCase() +
-          contentType.slice(1, contentType.length - 1)}
-      </Button>
+  const itemLabel =
+    contentType === "chats"
+      ? "New Chat"
+      : `New ${contentType.charAt(0).toUpperCase() + contentType.slice(1, contentType.length - 1)}`
 
-      {hasData && (
-        <Button className="size-[36px] p-1" onClick={handleCreateFolder}>
+  return (
+    <div className="flex w-full items-center space-x-2">
+      {contentType === "chats" ? (
+        /* Plain clickable text for New Chat */
+        <button
+          className="flex grow cursor-pointer items-center text-sm font-medium hover:opacity-70"
+          onClick={getCreateFunction()}
+        >
+          <IconPlus className="mr-1" size={16} />
+          {itemLabel}
+        </button>
+      ) : (
+        <button
+          className="border-input flex h-[36px] grow cursor-pointer items-center justify-center rounded-md border px-3 text-sm font-medium hover:opacity-70"
+          onClick={getCreateFunction()}
+        >
+          <IconPlus className="mr-1" size={16} />
+          {itemLabel}
+        </button>
+      )}
+
+      {/* Show folder button only for non-chats contexts */}
+      {contentType !== "chats" && hasData && (
+        <button
+          className="flex size-[36px] cursor-pointer items-center justify-center hover:opacity-70"
+          onClick={handleCreateFolder}
+          aria-label="New Folder"
+        >
           <IconFolderPlus size={20} />
-        </Button>
+        </button>
       )}
 
       {isCreatingPrompt && (

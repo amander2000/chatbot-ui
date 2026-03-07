@@ -6,19 +6,22 @@ import { WithTooltip } from "../ui/with-tooltip"
 interface SidebarSwitchItemProps {
   contentType: ContentType
   icon: React.ReactNode
+  label?: string
   onContentTypeChange: (contentType: ContentType) => void
 }
 
 export const SidebarSwitchItem: FC<SidebarSwitchItemProps> = ({
   contentType,
   icon,
+  label,
   onContentTypeChange
 }) => {
+  const displayLabel =
+    label ?? contentType[0].toUpperCase() + contentType.substring(1)
+
   return (
     <WithTooltip
-      display={
-        <div>{contentType[0].toUpperCase() + contentType.substring(1)}</div>
-      }
+      display={<div>{displayLabel}</div>}
       trigger={
         <TabsTrigger
           className="hover:opacity-50"

@@ -2,18 +2,21 @@
 
 import { Sidebar } from "@/components/sidebar/sidebar"
 import { SidebarSwitcher } from "@/components/sidebar/sidebar-switcher"
-import { Button } from "@/components/ui/button"
 import { Tabs } from "@/components/ui/tabs"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { cn } from "@/lib/utils"
 import { ContentType } from "@/types"
-import { IconChevronCompactRight } from "@tabler/icons-react"
+import Image from "next/image"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FC, useState } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
 
 export const SIDEBAR_WIDTH = 350
+
+// 3× the AVELLI chat-message monogram (AVELLI_HEIGHT=56, AVELLI_WIDTH=64)
+const TOGGLE_MONOGRAM_HEIGHT = 168
+const TOGGLE_MONOGRAM_WIDTH = 192
 
 interface DashboardProps {
   children: React.ReactNode
@@ -113,20 +116,25 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           children
         )}
 
-        <Button
-          className={cn(
-            "absolute left-[4px] top-[50%] z-10 size-[32px] cursor-pointer"
-          )}
-          style={{
-            // marginLeft: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
-            transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
-          }}
-          variant="ghost"
-          size="icon"
+        {/* AVELLI monogram in top-left — replaces the old ">" chevron button */}
+        <button
+          className="absolute left-2 top-2 z-10 cursor-pointer opacity-80 hover:opacity-60"
           onClick={handleToggleSidebar}
+          aria-label="Toggle sidebar"
         >
-          <IconChevronCompactRight size={24} />
-        </Button>
+          <Image
+            src="/icon-192x192.png"
+            alt="AVELLI"
+            width={TOGGLE_MONOGRAM_WIDTH}
+            height={TOGGLE_MONOGRAM_HEIGHT}
+            style={{
+              width: `${TOGGLE_MONOGRAM_WIDTH}px`,
+              height: `${TOGGLE_MONOGRAM_HEIGHT}px`,
+              objectFit: "contain"
+            }}
+            priority
+          />
+        </button>
       </div>
     </div>
   )
