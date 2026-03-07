@@ -26,7 +26,7 @@ export default function ChatPage() {
       {chatMessages.length === 0 ? (
         <div className="relative flex h-full flex-col items-center justify-center">
           <div className="top-50% left-50% -translate-x-50% -translate-y-50% absolute mb-20">
-            <Brand />
+            <Brand width={630} height={420} />
           </div>
 
           <div className="absolute left-2 top-2">
