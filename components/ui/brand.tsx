@@ -1,26 +1,18 @@
 "use client"
 
-import Link from "next/link"
+import Image from "next/image"
 import { FC } from "react"
-import { ChatbotUISVG } from "../icons/chatbotui-svg"
 
-interface BrandProps {
-  theme?: "dark" | "light"
-}
-
-export const Brand: FC<BrandProps> = ({ theme = "dark" }) => {
+export const Brand: FC = () => {
   return (
-    <Link
-      className="flex cursor-pointer flex-col items-center hover:opacity-50"
-      href="https://www.chatbotui.com"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <div className="mb-2">
-        <ChatbotUISVG theme={theme === "dark" ? "dark" : "light"} scale={0.3} />
-      </div>
-
-      <div className="text-4xl font-bold tracking-wide">Chatbot UI</div>
-    </Link>
+    <div className="flex cursor-default flex-col items-center">
+      <Image
+        src="/DARK_BRAND_LOGO.png"
+        alt="Avelli"
+        width={420}
+        height={280}
+        priority
+      />
+    </div>
   )
 }

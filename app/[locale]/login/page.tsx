@@ -1,7 +1,6 @@
 import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { SubmitButton } from "@/components/ui/submit-button"
 import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/supabase/types"
 import { createServerClient } from "@supabase/ssr"
@@ -189,16 +188,24 @@ export default async function Login({
           placeholder="••••••••"
         />
 
-        <SubmitButton className="mb-2 rounded-md bg-blue-700 px-4 py-2 text-white">
-          Login
-        </SubmitButton>
+        <div className="mt-1 flex justify-center gap-6 text-sm">
+          <button
+            type="submit"
+            aria-label="Sign in to your account"
+            className="text-primary underline hover:opacity-80"
+          >
+            Login
+          </button>
 
-        <SubmitButton
-          formAction={signUp}
-          className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
-        >
-          Sign Up
-        </SubmitButton>
+          <button
+            type="submit"
+            formAction={signUp}
+            aria-label="Create a new account"
+            className="text-primary underline hover:opacity-80"
+          >
+            Sign Up
+          </button>
+        </div>
 
         <div className="text-muted-foreground mt-1 flex justify-center text-sm">
           <span className="mr-1">Forgot your password?</span>
