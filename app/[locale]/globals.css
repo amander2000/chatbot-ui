@@ -102,3 +102,82 @@
     @apply bg-background text-foreground;
   }
 }
+
+.strategize-btn {
+  border: 1px solid #c9c9c9;
+  border-radius: 9999px;
+  padding: 8px 18px;
+  background: white;
+  color: #111;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 0 0 1px rgba(65, 105, 225, 0.15),
+    0 2px 6px rgba(65, 105, 225, 0.08);
+}
+
+.strategize-btn:hover {
+  border-color: rgba(65, 105, 225, 0.45);
+  box-shadow:
+    0 0 6px rgba(65, 105, 225, 0.18),
+    0 3px 10px rgba(65, 105, 225, 0.12);
+}
+
+.dark .strategize-btn {
+  background: #1c1c2e;
+  color: #e5e5e5;
+  border-color: #3a3a5c;
+}
+
+.dark .strategize-btn:hover {
+  border-color: rgba(65, 105, 225, 0.6);
+}
+
+/* --- Brand hero logo halo --- */
+.brand-halo-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-halo {
+  position: absolute;
+  /* extends 48px beyond the logo on each side to create the halo ring */
+  inset: -48px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(65, 105, 225, 0.07) 20%,
+    rgba(65, 105, 225, 0.03) 40%,
+    transparent 60%,
+    rgba(65, 105, 225, 0.05) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.brand-halo-wrapper:hover .brand-halo {
+  opacity: 1;
+  animation: brand-halo-spin 12s linear infinite;
+}
+
+.brand-halo-wrapper > img {
+  transition: transform 0.35s ease;
+}
+
+.brand-halo-wrapper:hover > img {
+  transform: translateY(-3px);
+}
+
+@keyframes brand-halo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

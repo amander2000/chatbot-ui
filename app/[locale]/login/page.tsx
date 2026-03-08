@@ -1,7 +1,6 @@
 import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { SubmitButton } from "@/components/ui/submit-button"
 import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/supabase/types"
 import { createServerClient } from "@supabase/ssr"
@@ -162,60 +161,94 @@ export default async function Login({
   }
 
   return (
-    <div className="flex w-full flex-1 flex-col justify-center gap-2 px-8 sm:max-w-md">
-      <form
-        className="animate-in text-foreground flex w-full flex-1 flex-col justify-center gap-2"
-        action={signIn}
-      >
-        <Brand />
+    <div className="relative flex w-full flex-1 flex-col items-center justify-center">
+      {/* Sign In / Sign Up in top-right corner, associated with the main form below */}
+      <div className="absolute right-6 top-6 flex items-center space-x-4">
+        <button
+          type="submit"
+          form="login-form"
+          aria-label="Sign in to your account"
+          className="text-primary text-sm hover:opacity-80"
+        >
+          Sign In
+        </button>
 
-        <Label className="text-md mt-4" htmlFor="email">
-          Email
-        </Label>
-        <Input
-          className="mb-3 rounded-md border bg-inherit px-4 py-2"
-          name="email"
-          placeholder="you@example.com"
-          required
-        />
-
-        <Label className="text-md" htmlFor="password">
-          Password
-        </Label>
-        <Input
-          className="mb-6 rounded-md border bg-inherit px-4 py-2"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-        />
-
-        <SubmitButton className="mb-2 rounded-md bg-blue-700 px-4 py-2 text-white">
-          Login
-        </SubmitButton>
-
-        <SubmitButton
+        <button
+          type="submit"
+          form="login-form"
           formAction={signUp}
-          className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
+          aria-label="Create a new account"
+          className="cursor-pointer rounded-full bg-black px-4 py-1.5 text-sm text-white hover:opacity-70 dark:bg-white dark:text-black"
         >
           Sign Up
-        </SubmitButton>
+        </button>
+      </div>
 
-        <div className="text-muted-foreground mt-1 flex justify-center text-sm">
-          <span className="mr-1">Forgot your password?</span>
-          <button
-            formAction={handleResetPassword}
-            className="text-primary ml-1 underline hover:opacity-80"
-          >
-            Reset
-          </button>
-        </div>
+      {/* Centered logo + form */}
+      <div className="flex w-full max-w-xl flex-col gap-2 px-8">
+        <Brand width={1890} height={1260} />
 
-        {searchParams?.message && (
-          <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
-            {searchParams.message}
-          </p>
-        )}
-      </form>
+        <form
+          id="login-form"
+          className="animate-in text-foreground flex w-full flex-col gap-2"
+          action={signIn}
+        >
+          <Label className="text-md mt-4" htmlFor="email">
+            Email
+          </Label>
+          <Input
+            className="mb-3 rounded-md border bg-inherit px-4 py-2"
+            name="email"
+            placeholder="you@example.com"
+            required
+          />
+
+          <Label className="text-md" htmlFor="password">
+            Password
+          </Label>
+          <Input
+            className="mb-6 rounded-md border bg-inherit px-4 py-2"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+          />
+
+          <div className="mt-1 flex justify-center gap-6 text-sm">
+            <button
+              type="submit"
+              aria-label="Sign in to your account"
+              className="text-primary underline hover:opacity-80"
+            >
+              Login
+            </button>
+
+            <button
+              type="submit"
+              formAction={signUp}
+              aria-label="Create a new account"
+              className="text-primary underline hover:opacity-80"
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <div className="text-muted-foreground mt-1 flex justify-center text-sm">
+            <span className="mr-1">Forgot your password?</span>
+            <button
+              formAction={handleResetPassword}
+              className="text-primary ml-1 underline hover:opacity-80"
+            >
+              Reset
+            </button>
+          </div>
+
+          {searchParams?.message && (
+            <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
+              {searchParams.message}
+            </p>
+          )}
+        </form>
+      </div>
     </div>
   )
 }

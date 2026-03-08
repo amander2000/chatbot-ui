@@ -191,9 +191,10 @@ export const useChatHandler = () => {
   const handleSendMessage = async (
     messageContent: string,
     chatMessages: ChatMessage[],
-    isRegeneration: boolean
+    isRegeneration: boolean,
+    displayContent?: string
   ) => {
-    const startingInput = messageContent
+    const startingInput = displayContent ?? messageContent
 
     try {
       setUserInput("")
@@ -250,7 +251,7 @@ export const useChatHandler = () => {
 
       const { tempUserChatMessage, tempAssistantChatMessage } =
         createTempMessages(
-          messageContent,
+          displayContent ?? messageContent,
           chatMessages,
           chatSettings!,
           b64Images,
@@ -259,12 +260,25 @@ export const useChatHandler = () => {
           selectedAssistant
         )
 
+      // When a display-only content differs from the actual message, build a
+      // separate chat message carrying the full content for the API payload.
+      const apiUserChatMessage =
+        displayContent !== undefined && displayContent !== ""
+          ? {
+              ...tempUserChatMessage,
+              message: {
+                ...tempUserChatMessage.message,
+                content: messageContent
+              }
+            }
+          : tempUserChatMessage
+
       let payload: ChatPayload = {
         chatSettings: chatSettings!,
         workspaceInstructions: selectedWorkspace!.instructions || "",
         chatMessages: isRegeneration
           ? [...chatMessages]
-          : [...chatMessages, tempUserChatMessage],
+          : [...chatMessages, apiUserChatMessage],
         assistant: selectedChat?.assistant_id ? selectedAssistant : null,
         messageFileItems: retrievedFileItems,
         chatFileItems: chatFileItems
@@ -272,7 +286,10 @@ export const useChatHandler = () => {
 
       let generatedText = ""
 
-      if (selectedTools.length > 0) {
+      if (
+        selectedTools.length > 0 ||
+        process.env.NEXT_PUBLIC_TAVILY_ENABLED === "true"
+      ) {
         setToolInUse("Tools")
 
         const formattedMessages = await buildFinalMessages(
@@ -343,7 +360,7 @@ export const useChatHandler = () => {
           chatSettings!,
           profile!,
           selectedWorkspace!,
-          messageContent,
+          displayContent ?? messageContent,
           selectedAssistant!,
           newMessageFiles,
           setSelectedChat,
@@ -369,7 +386,7 @@ export const useChatHandler = () => {
         currentChat,
         profile!,
         modelData!,
-        messageContent,
+        displayContent ?? messageContent,
         generatedText,
         newMessageImages,
         isRegeneration,

@@ -1,19 +1,19 @@
 "use client"
 
 import { Sidebar } from "@/components/sidebar/sidebar"
-import { SidebarSwitcher } from "@/components/sidebar/sidebar-switcher"
-import { Button } from "@/components/ui/button"
-import { Tabs } from "@/components/ui/tabs"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { cn } from "@/lib/utils"
-import { ContentType } from "@/types"
-import { IconChevronCompactRight } from "@tabler/icons-react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { FC, useState } from "react"
+import Image from "next/image"
+import { useTheme } from "next-themes"
+import { FC, useEffect, useState } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
 
 export const SIDEBAR_WIDTH = 350
+
+// 50% of the previous 3× chat-monogram size (192×168 → 96×84)
+const TOGGLE_MONOGRAM_HEIGHT = 84
+const TOGGLE_MONOGRAM_WIDTH = 96
 
 interface DashboardProps {
   children: React.ReactNode
@@ -22,16 +22,15 @@ interface DashboardProps {
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
   useHotkey("s", () => setShowSidebar(prevState => !prevState))
 
-  const pathname = usePathname()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const tabValue = searchParams.get("tab") || "chats"
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { handleSelectDeviceFile } = useSelectFileHandler()
 
-  const [contentType, setContentType] = useState<ContentType>(
-    tabValue as ContentType
-  )
   const [showSidebar, setShowSidebar] = useState(
     localStorage.getItem("showSidebar") === "true"
   )
@@ -82,20 +81,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           width: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px"
         }}
       >
-        {showSidebar && (
-          <Tabs
-            className="flex h-full"
-            value={contentType}
-            onValueChange={tabValue => {
-              setContentType(tabValue as ContentType)
-              router.replace(`${pathname}?tab=${tabValue}`)
-            }}
-          >
-            <SidebarSwitcher onContentTypeChange={setContentType} />
-
-            <Sidebar contentType={contentType} showSidebar={showSidebar} />
-          </Tabs>
-        )}
+        {showSidebar && <Sidebar showSidebar={showSidebar} />}
       </div>
 
       <div
@@ -113,20 +99,29 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           children
         )}
 
-        <Button
-          className={cn(
-            "absolute left-[4px] top-[50%] z-10 size-[32px] cursor-pointer"
-          )}
-          style={{
-            // marginLeft: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
-            transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
-          }}
-          variant="ghost"
-          size="icon"
+        {/* AVELLI monogram in top-left — toggles sidebar */}
+        <button
+          className="absolute left-2 top-2 z-10 cursor-pointer opacity-80 hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           onClick={handleToggleSidebar}
+          aria-label="Toggle sidebar"
         >
-          <IconChevronCompactRight size={24} />
-        </Button>
+          <Image
+            src={
+              mounted && resolvedTheme === "dark"
+                ? "/white-monogram.png"
+                : "/icon-192x192.png"
+            }
+            alt="AVELLI"
+            width={TOGGLE_MONOGRAM_WIDTH}
+            height={TOGGLE_MONOGRAM_HEIGHT}
+            style={{
+              width: `${TOGGLE_MONOGRAM_WIDTH}px`,
+              height: `${TOGGLE_MONOGRAM_HEIGHT}px`,
+              objectFit: "contain"
+            }}
+            priority
+          />
+        </button>
       </div>
     </div>
   )
