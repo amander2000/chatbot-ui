@@ -7,7 +7,7 @@ import { IconPaperclip, IconSend } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-type InputMode = "default" | "humanize" | "write" | "summarize"
+type InputMode = "default" | "humanize" | "write" | "summarize" | "strategize"
 
 const MODE_CONFIG: {
   mode: InputMode
@@ -28,6 +28,11 @@ const MODE_CONFIG: {
     mode: "summarize",
     label: "Summarize",
     placeholder: "Upload or Paste text to be summarized."
+  },
+  {
+    mode: "strategize",
+    label: "Strategize",
+    placeholder: "Describe the situation or dynamics…"
   }
 ]
 

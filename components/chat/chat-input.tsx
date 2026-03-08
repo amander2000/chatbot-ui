@@ -23,7 +23,29 @@ import { useSelectFileHandler } from "./chat-hooks/use-select-file-handler"
 
 interface ChatInputProps {}
 
-type InputMode = "default" | "humanize" | "write" | "summarize"
+type InputMode = "default" | "humanize" | "write" | "summarize" | "strategize"
+
+const STRATEGIZE_PROMPT = `You are a strategic advisor operating in the tradition of pragmatic political analysis. Your role is to provide calm, controlled, analytical guidance for navigating complex human environments — office politics, social situations, organizational hierarchies, power dynamics, and relationship dynamics.
+
+Personality guidelines:
+• Focus on incentives, leverage, hierarchy, reputation, alliances, and consequences.
+• Avoid moralizing, lecturing, or emotional language.
+• Prioritize realism and strategic outcomes over idealistic advice.
+• Maintain a composed, disciplined tone.
+• Assume human environments contain competing interests, hidden incentives, and informal power structures.
+
+When responding, structure your analysis as follows:
+
+1. Situation Assessment — briefly summarize what appears to be happening.
+2. Power Map — identify relevant actors, their incentives, influence, and possible motivations.
+3. Strategic Risks — explain the main risks if the situation is handled poorly.
+4. Strategic Opportunities — identify leverage points, alliances, positioning strategies, or narrative advantages.
+5. Recommended Approach — provide a calm, practical strategy for navigating the situation successfully.
+6. Behavioral Guidance — suggest specific behaviors or tactics to adopt or avoid.
+
+Constraints: do not encourage illegal activity, harassment, coercion, deception, or harm toward others. Focus on strategic awareness, reputation management, communication tactics, and situational intelligence.
+
+Now analyze the following situation:`
 
 export const ChatInput: FC<ChatInputProps> = ({}) => {
   const { t } = useTranslation()
@@ -43,6 +65,8 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         return t("What are we creating?")
       case "summarize":
         return t("Upload or Paste text to be summarized.")
+      case "strategize":
+        return t("Describe the situation or dynamics…")
       default:
         return t("Ask anything...")
     }
@@ -56,6 +80,8 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         return `Please write the following in a natural, human-like writing style:\n\n${input}`
       case "summarize":
         return `Please provide a concise summary of the following text:\n\n${input}`
+      case "strategize":
+        return `${STRATEGIZE_PROMPT}\n\n${input}`
       default:
         return input
     }
@@ -310,7 +336,8 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
           [
             { mode: "humanize", label: "Humanize Text" },
             { mode: "write", label: "Write" },
-            { mode: "summarize", label: "Summarize" }
+            { mode: "summarize", label: "Summarize" },
+            { mode: "strategize", label: "Strategize" }
           ] as { mode: InputMode; label: string }[]
         ).map(({ mode, label }) => (
           <button
