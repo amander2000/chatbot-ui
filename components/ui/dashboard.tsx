@@ -101,7 +101,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
 
         {/* AVELLI monogram in top-left — toggles sidebar */}
         <button
-          className="absolute left-2 top-2 z-10 cursor-pointer opacity-80 hover:opacity-60"
+          className="absolute left-2 top-2 z-10 cursor-pointer opacity-80 hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           onClick={handleToggleSidebar}
           aria-label="Toggle sidebar"
         >
