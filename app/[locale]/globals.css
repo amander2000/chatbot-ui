@@ -102,3 +102,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+.strategize-btn {
+  border: 1px solid #c9c9c9;
+  border-radius: 9999px;
+  padding: 8px 18px;
+  background: white;
+  color: #111;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 0 0 1px rgba(65, 105, 225, 0.15),
+    0 2px 6px rgba(65, 105, 225, 0.08);
+}
+
+.strategize-btn:hover {
+  border-color: rgba(65, 105, 225, 0.45);
+  box-shadow:
+    0 0 6px rgba(65, 105, 225, 0.18),
+    0 3px 10px rgba(65, 105, 225, 0.12);
+}
+
+.dark .strategize-btn {
+  background: #1c1c2e;
+  color: #e5e5e5;
+  border-color: #3a3a5c;
+}
+
+.dark .strategize-btn:hover {
+  border-color: rgba(65, 105, 225, 0.6);
+}

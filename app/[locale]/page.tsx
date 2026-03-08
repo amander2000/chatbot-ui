@@ -125,7 +125,9 @@ export default function HomePage() {
                   setInputMode(inputMode === mode ? "default" : mode)
                 }
                 className={cn(
-                  "cursor-pointer rounded-full border border-black bg-transparent px-4 py-1.5 text-sm transition-opacity hover:opacity-70 dark:border-white",
+                  mode === "strategize"
+                    ? "strategize-btn cursor-pointer text-sm"
+                    : "cursor-pointer rounded-full border border-black bg-transparent px-4 py-1.5 text-sm transition-opacity hover:opacity-70 dark:border-white",
                   inputMode === mode && "font-semibold"
                 )}
               >
