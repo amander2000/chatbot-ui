@@ -140,7 +140,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
-      handleSendMessage(getMessageToSend(userInput), chatMessages, false)
+      handleSendMessage(getMessageToSend(userInput), chatMessages, false, userInput)
     }
 
     // Consolidate conditions to avoid TypeScript error
@@ -322,7 +322,8 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
                 handleSendMessage(
                   getMessageToSend(userInput),
                   chatMessages,
-                  false
+                  false,
+                  userInput
                 )
               }}
               size={28}
