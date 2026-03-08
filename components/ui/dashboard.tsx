@@ -4,7 +4,8 @@ import { Sidebar } from "@/components/sidebar/sidebar"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { FC, useState } from "react"
+import { useTheme } from "next-themes"
+import { FC, useEffect, useState } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
 
@@ -20,6 +21,13 @@ interface DashboardProps {
 
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
   useHotkey("s", () => setShowSidebar(prevState => !prevState))
+
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { handleSelectDeviceFile } = useSelectFileHandler()
 
@@ -98,7 +106,11 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           aria-label="Toggle sidebar"
         >
           <Image
-            src="/icon-192x192.png"
+            src={
+              mounted && resolvedTheme === "dark"
+                ? "/white-monogram.png"
+                : "/icon-192x192.png"
+            }
             alt="AVELLI"
             width={TOGGLE_MONOGRAM_WIDTH}
             height={TOGGLE_MONOGRAM_HEIGHT}

@@ -132,3 +132,52 @@
 .dark .strategize-btn:hover {
   border-color: rgba(65, 105, 225, 0.6);
 }
+
+/* --- Brand hero logo halo --- */
+.brand-halo-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-halo {
+  position: absolute;
+  /* extends 48px beyond the logo on each side to create the halo ring */
+  inset: -48px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(65, 105, 225, 0.07) 20%,
+    rgba(65, 105, 225, 0.03) 40%,
+    transparent 60%,
+    rgba(65, 105, 225, 0.05) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.brand-halo-wrapper:hover .brand-halo {
+  opacity: 1;
+  animation: brand-halo-spin 12s linear infinite;
+}
+
+.brand-halo-wrapper > img {
+  transition: transform 0.35s ease;
+}
+
+.brand-halo-wrapper:hover > img {
+  transform: translateY(-3px);
+}
+
+@keyframes brand-halo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
